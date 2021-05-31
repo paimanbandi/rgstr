@@ -14,6 +14,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
   Widget build(BuildContext context) {
     TextStyle textStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.normal);
     bool _bErrImei = false;
+    bool _bErrFirstName = false;
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -44,6 +45,29 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                         initialValue: state.sPlatformImei,
                         decoration: InputDecoration(
                           errorText: _bErrImei ? "Can't be empty" : null,
+                        ),
+                        style: textStyle,
+                      ),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        'First Name',
+                        style: textStyle,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: TextFormField(
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(50),
+                        ],
+                        decoration: InputDecoration(
+                          errorText: _bErrFirstName ? "Can't be empty" : null,
                         ),
                         style: textStyle,
                       ),
