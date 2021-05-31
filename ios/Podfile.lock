@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - imei_imsi_plugin (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - imei_imsi_plugin (from `.symlinks/plugins/imei_imsi_plugin/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  imei_imsi_plugin:
+    :path: ".symlinks/plugins/imei_imsi_plugin/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  imei_imsi_plugin: 1a4c9161b4897874804208066f4473a1a1721a64
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.10.1

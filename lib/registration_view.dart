@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rgstr/registration_controller.dart';
 import 'package:rgstr/registration_page.dart';
 
@@ -11,17 +12,47 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
 
   @override
   Widget build(BuildContext context) {
+    TextStyle textStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.normal);
+    bool _bErrImei = false;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[],
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
         ),
-      ),
-    );
+        body: Padding(
+          padding: EdgeInsets.all(30),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        'IMEI',
+                        style: textStyle,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: TextFormField(
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(17),
+                        ],
+                        initialValue: state.sPlatformImei,
+                        decoration: InputDecoration(
+                          errorText: _bErrImei ? "Can't be empty" : null,
+                        ),
+                        style: textStyle,
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }
