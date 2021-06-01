@@ -17,6 +17,8 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
     bool _bErrFirstName = false;
     bool _bErrLastName = false;
     bool _bErrDob = false;
+    bool _bErrPassport = false;
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -131,6 +133,32 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                               ))
                         ],
                       ),
+                      state.age >= 18
+                          ? Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    'Passport',
+                                    style: textStyle,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: TextFormField(
+                                    inputFormatters: [
+                                      LengthLimitingTextInputFormatter(20),
+                                    ],
+                                    decoration: InputDecoration(
+                                      hintText: 'Your passport',
+                                      errorText: _bErrPassport ? "Can't be empty" : null,
+                                    ),
+                                    style: textStyle,
+                                  ),
+                                )
+                              ],
+                            )
+                          : Container(),
                     ],
                   ),
                 )
