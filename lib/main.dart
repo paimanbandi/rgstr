@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rgstr/global.dart';
-import 'package:rgstr/registration_page.dart';
+import 'package:rgstr/registrations/registration_page.dart';
 
 void main() {
   runApp(MyApp());

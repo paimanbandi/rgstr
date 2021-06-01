@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rgstr/registration_controller.dart';
+import 'package:rgstr/registrations/registration_controller.dart';
 
 class RegistrationPage extends StatefulWidget {
   final String title;

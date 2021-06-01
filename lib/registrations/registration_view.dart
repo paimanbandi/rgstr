@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rgstr/global.dart';
-import 'package:rgstr/registration_controller.dart';
-import 'package:rgstr/registration_page.dart';
-import 'package:rgstr/validations.dart';
+import 'package:rgstr/registrations/registration_controller.dart';
+import 'package:rgstr/registrations/registration_dao.dart';
+import 'package:rgstr/registrations/registration_model.dart';
+import 'package:rgstr/registrations/registration_page.dart';
+import 'package:rgstr/registrations/registration_validations.dart';
 import 'package:rgstr/utils.dart';
 
 class RegistrationView extends WidgetView<RegistrationPage, RegistrationController> {
@@ -38,13 +40,14 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
               padding: EdgeInsets.all(30),
               child: Center(
                 child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
-                  SingleChildScrollView(
+                  Expanded(
+                      child: SingleChildScrollView(
                     child: Column(
                       children: [
                         Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Text(
                                 'IMEI *',
                                 style: textStyle,
@@ -53,6 +56,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                             Expanded(
                               flex: 3,
                               child: TextFormField(
+                                keyboardType: TextInputType.number,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(17),
                                 ],
@@ -88,7 +92,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                         Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Text(
                                 'First Name *',
                                 style: textStyle,
@@ -97,6 +101,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                             Expanded(
                               flex: 3,
                               child: TextFormField(
+                                keyboardType: TextInputType.name,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(50),
                                 ],
@@ -131,7 +136,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                         Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Text(
                                 'Last Name *',
                                 style: textStyle,
@@ -140,6 +145,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                             Expanded(
                               flex: 3,
                               child: TextFormField(
+                                keyboardType: TextInputType.name,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(50),
                                 ],
@@ -175,7 +181,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                         Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Text(
                                 'DoB *',
                                 style: textStyle,
@@ -187,6 +193,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                                   onTap: () => state.selectDate(context),
                                   child: AbsorbPointer(
                                     child: TextFormField(
+                                      keyboardType: TextInputType.datetime,
                                       controller: state.tecDob,
                                       onChanged: (value) {
                                         if (value.isEmpty) {
@@ -196,7 +203,6 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                                         }
                                         pSetState(() {});
                                       },
-                                      keyboardType: TextInputType.datetime,
                                       decoration: InputDecoration(
                                         hintText: 'Date of Birth',
                                         errorText: _bErrDob ? "Can't be empty" : null,
@@ -213,7 +219,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                             ? Row(
                                 children: [
                                   Expanded(
-                                    flex: 1,
+                                    flex: 2,
                                     child: Text(
                                       'Passport *',
                                       style: textStyle,
@@ -222,6 +228,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                                   Expanded(
                                     flex: 3,
                                     child: TextFormField(
+                                      keyboardType: TextInputType.text,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(20),
                                       ],
@@ -257,7 +264,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                         Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Text(
                                 'Email',
                                 style: textStyle,
@@ -266,6 +273,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                             Expanded(
                               flex: 3,
                               child: TextFormField(
+                                keyboardType: TextInputType.emailAddress,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(50),
                                 ],
@@ -297,7 +305,7 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                         Row(
                           children: [
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: Text(
                                 'Picture *',
                                 style: textStyle,
@@ -315,7 +323,13 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                                   ),
                                   onPressed: () async {
                                     final File result = await openCamOrDirDialog();
-                                    if (result != null) state.setState(() => state.fPicture = result);
+                                    if (result != null) {
+                                      state.setState(() {
+                                        state.fPicture = result;
+                                        state.sPicture = result.path;
+                                      });
+                                      pSetState(() {});
+                                    }
                                   }),
                             )
                           ],
@@ -323,30 +337,66 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                         Row(
                           children: [
                             Expanded(
-                                child: ElevatedButton(
-                                    style: ButtonStyle(
-                                      padding: MaterialStateProperty.all(EdgeInsets.all(15)),
-                                      elevation: MaterialStateProperty.all(0),
-                                      shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10))),
-                                      backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                                        if (states.contains(MaterialState.disabled)) return disabledColor;
-                                        return primaryColor;
-                                      }),
-                                      foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                                        if (states.contains(MaterialState.disabled)) return textColor;
-                                        return whiteColor;
-                                      }),
-                                    ),
-                                    onPressed: () => null,
-                                    child: Text(
-                                      'Submit',
-                                    ))),
+                              child: Text(
+                                state.sPicture,
+                                style: textStyle,
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                  margin: EdgeInsets.only(top: 20),
+                                  child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        padding: MaterialStateProperty.all(EdgeInsets.all(15)),
+                                        elevation: MaterialStateProperty.all(0),
+                                        shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10))),
+                                        backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                                          if (states.contains(MaterialState.disabled)) return disabledColor;
+                                          return primaryColor;
+                                        }),
+                                        foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                                          if (states.contains(MaterialState.disabled)) return blackColor;
+                                          return whiteColor;
+                                        }),
+                                      ),
+                                      onPressed: () async {
+                                        // showOverlay();
+                                        print("submit");
+                                        Registration registration = Registration(
+                                            imei: state.tecImei.text,
+                                            firstName: state.tecFirstName.text,
+                                            lastName: state.tecLastName.text,
+                                            dob: state.tecDob.text,
+                                            passport: state.tecPassport.text,
+                                            email: state.tecEmail.text,
+                                            picture: state.sPicture,
+                                            osName: Platform.isAndroid ? "Android" : "iOS",
+                                            osVersion: state.sOSVersion);
+
+                                        int res = await RegistrationDao().register(registration); //await state.register(registration);
+                                        print("res nya " + res.toString());
+                                        if (res > 0) {
+                                          ScaffoldMessenger.of(context).showSnackBar(snackBarSucceed);
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(snackBarFailed);
+                                        }
+
+                                        // hideOverlay();
+                                      },
+                                      child: Text(
+                                        'Submit',
+                                      ))),
+                            ),
                             // ),
                           ],
                         ),
                       ],
                     ),
-                  )
+                  ))
                 ]),
               )));
     });

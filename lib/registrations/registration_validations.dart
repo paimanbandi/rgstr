@@ -3,7 +3,7 @@ bool isImeiValid(String imei) {
 }
 
 bool isNameValid(String name) {
-  return RegExp(r'^[a-zA-Z]+$').hasMatch(name);
+  return RegExp(r'^[a-zA-Z ]+$').hasMatch(name);
 }
 
 bool isPassportValid(String passport) {

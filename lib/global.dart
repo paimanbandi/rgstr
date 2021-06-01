@@ -16,4 +16,12 @@ abstract class WidgetView<T1, T2> extends StatelessWidget {
 const Color primaryColor = Colors.blue;
 const Color whiteColor = Colors.white;
 const Color disabledColor = Colors.grey;
-const Color textColor = Colors.black54;
+const Color blackColor = Colors.black54;
+
+final snackBarSucceed = SnackBar(
+  content: Text('Registration succeed!'),
+);
+
+final snackBarFailed = SnackBar(
+  content: Text('Registration failed!'),
+);
