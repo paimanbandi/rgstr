@@ -10,7 +10,14 @@ import 'package:device_info/device_info.dart';
 
 class RegistrationController extends State<RegistrationPage> {
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-  TextEditingController date = new TextEditingController();
+
+  TextEditingController tecImei = new TextEditingController();
+  TextEditingController tecFirstName = new TextEditingController();
+  TextEditingController tecLastName = new TextEditingController();
+  TextEditingController tecDob = new TextEditingController();
+  TextEditingController tecPassport = new TextEditingController();
+  TextEditingController tecEmail = new TextEditingController();
+
   DateTime selectedDate = DateTime.now();
   int age = 0;
 
@@ -30,7 +37,7 @@ class RegistrationController extends State<RegistrationPage> {
       final DateTime now = DateTime.now();
       setState(() {
         selectedDate = picked;
-        date.value = TextEditingValue(text: formattedDateTime);
+        tecDob.value = TextEditingValue(text: formattedDateTime);
         age = getAge(birthday, now);
       });
     }

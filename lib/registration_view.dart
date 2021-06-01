@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rgstr/registration_controller.dart';
 import 'package:rgstr/registration_page.dart';
+import 'package:rgstr/validations.dart';
 
 import 'global.dart';
 
@@ -18,151 +19,284 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
     bool _bErrLastName = false;
     bool _bErrDob = false;
     bool _bErrPassport = false;
+    bool _bErrEmail = false;
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          centerTitle: true,
-        ),
-        body: Padding(
-            padding: EdgeInsets.all(30),
-            child: Center(
-              child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              'IMEI',
-                              style: textStyle,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: TextFormField(
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(17),
-                              ],
-                              initialValue: state.sPlatformImei,
-                              decoration: InputDecoration(
-                                hintText: 'IMEI on your phone',
-                                errorText: _bErrImei ? "Can't be empty" : null,
+    String _sErrImei = "";
+    String _sErrFirstName = "";
+    String _sErrLastName = "";
+    String _sErrPassport = "";
+
+    return StatefulBuilder(builder: (context, pSetState) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+            centerTitle: true,
+          ),
+          body: Padding(
+              padding: EdgeInsets.all(30),
+              child: Center(
+                child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'IMEI *',
+                                style: textStyle,
                               ),
-                              style: textStyle,
                             ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              'First Name',
-                              style: textStyle,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: TextFormField(
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(50),
-                              ],
-                              decoration: InputDecoration(
-                                hintText: 'Your first name',
-                                errorText: _bErrFirstName ? "Can't be empty" : null,
-                              ),
-                              style: textStyle,
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              'Last Name',
-                              style: textStyle,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: TextFormField(
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(50),
-                              ],
-                              decoration: InputDecoration(
-                                hintText: 'Your last name',
-                                errorText: _bErrLastName ? "Can't be empty" : null,
-                              ),
-                              style: textStyle,
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              'DoB',
-                              style: textStyle,
-                            ),
-                          ),
-                          Expanded(
+                            Expanded(
                               flex: 3,
-                              child: GestureDetector(
-                                onTap: () => state.selectDate(context),
-                                child: AbsorbPointer(
-                                  child: TextFormField(
-                                    controller: state.date,
-                                    keyboardType: TextInputType.datetime,
-                                    decoration: InputDecoration(
-                                      hintText: 'Date of Birth',
-                                      errorText: _bErrDob ? "Can't be empty" : null,
-                                      prefixIcon: Icon(
-                                        Icons.calendar_today,
+                              child: TextFormField(
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(17),
+                                ],
+                                controller: state.tecImei,
+                                onChanged: (value) {
+                                  if (value.isEmpty) {
+                                    _bErrImei = true;
+                                  } else {
+                                    _bErrImei = false;
+                                  }
+
+                                  if (!isImeiValid(value) || value.length < 15) {
+                                    _sErrImei = "Not valid IMEI";
+                                  } else {
+                                    _sErrImei = "";
+                                  }
+
+                                  pSetState(() {});
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'IMEI on your phone',
+                                  errorText: _bErrImei
+                                      ? "Can't be empty"
+                                      : _sErrImei != ""
+                                          ? _sErrImei
+                                          : null,
+                                ),
+                                style: textStyle,
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'First Name *',
+                                style: textStyle,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: TextFormField(
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(50),
+                                ],
+                                controller: state.tecFirstName,
+                                onChanged: (value) {
+                                  if (value.isEmpty) {
+                                    _bErrFirstName = true;
+                                  } else {
+                                    _bErrFirstName = false;
+                                  }
+
+                                  if (!isNameValid(value)) {
+                                    _sErrFirstName = 'Not valid name';
+                                  } else {
+                                    _sErrFirstName = "";
+                                  }
+                                  pSetState(() {});
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Your first name',
+                                  errorText: _bErrFirstName
+                                      ? "Can't be empty"
+                                      : _sErrFirstName != ""
+                                          ? _sErrFirstName
+                                          : null,
+                                ),
+                                style: textStyle,
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'Last Name *',
+                                style: textStyle,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: TextFormField(
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(50),
+                                ],
+                                controller: state.tecLastName,
+                                onChanged: (value) {
+                                  if (value.isEmpty) {
+                                    _bErrLastName = true;
+                                  } else {
+                                    _bErrLastName = false;
+                                  }
+
+                                  if (!isNameValid(value)) {
+                                    _sErrLastName = 'Not valid name';
+                                  } else {
+                                    _sErrLastName = "";
+                                  }
+
+                                  pSetState(() {});
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Your last name',
+                                  errorText: _bErrLastName
+                                      ? "Can't be empty"
+                                      : _sErrLastName != ""
+                                          ? _sErrLastName
+                                          : null,
+                                ),
+                                style: textStyle,
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'DoB *',
+                                style: textStyle,
+                              ),
+                            ),
+                            Expanded(
+                                flex: 3,
+                                child: GestureDetector(
+                                  onTap: () => state.selectDate(context),
+                                  child: AbsorbPointer(
+                                    child: TextFormField(
+                                      controller: state.tecDob,
+                                      onChanged: (value) {
+                                        if (value.isEmpty) {
+                                          _bErrDob = true;
+                                        } else {
+                                          _bErrDob = false;
+                                        }
+                                        pSetState(() {});
+                                      },
+                                      keyboardType: TextInputType.datetime,
+                                      decoration: InputDecoration(
+                                        hintText: 'Date of Birth',
+                                        errorText: _bErrDob ? "Can't be empty" : null,
+                                        prefixIcon: Icon(
+                                          Icons.calendar_today,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ))
-                        ],
-                      ),
-                      state.age >= 18
-                          ? Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    'Passport',
-                                    style: textStyle,
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: TextFormField(
-                                    inputFormatters: [
-                                      LengthLimitingTextInputFormatter(20),
-                                    ],
-                                    decoration: InputDecoration(
-                                      hintText: 'Your passport',
-                                      errorText: _bErrPassport ? "Can't be empty" : null,
+                                ))
+                          ],
+                        ),
+                        state.age >= 18
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      'Passport *',
+                                      style: textStyle,
                                     ),
-                                    style: textStyle,
                                   ),
-                                )
-                              ],
+                                  Expanded(
+                                    flex: 3,
+                                    child: TextFormField(
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(20),
+                                      ],
+                                      controller: state.tecPassport,
+                                      onChanged: (value) {
+                                        if (value == "") {
+                                          _bErrPassport = true;
+                                        } else {
+                                          _bErrPassport = false;
+                                        }
+
+                                        if (!isPassportValid(value)) {
+                                          _sErrPassport = "Not valid passport";
+                                        } else {
+                                          _sErrPassport = "";
+                                        }
+                                        pSetState(() {});
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Your passport',
+                                        errorText: _bErrPassport
+                                            ? "Can't be empty"
+                                            : _sErrPassport != ""
+                                                ? _sErrPassport
+                                                : null,
+                                      ),
+                                      style: textStyle,
+                                    ),
+                                  )
+                                ],
+                              )
+                            : Container(),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'Email',
+                                style: textStyle,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: TextFormField(
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(50),
+                                ],
+                                onChanged: (value) {
+                                  print(value);
+                                  if (!isEmailValid(value)) {
+                                    _bErrEmail = true;
+                                  }
+
+                                  if (isEmailValid(value)) {
+                                    _bErrEmail = false;
+                                  }
+
+                                  if (value.isEmpty) {
+                                    _bErrEmail = false;
+                                  }
+
+                                  pSetState(() {});
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Your email',
+                                  errorText: _bErrEmail ? "Not valid email" : null,
+                                ),
+                                style: textStyle,
+                              ),
                             )
-                          : Container(),
-                    ],
-                  ),
-                )
-              ]),
-            )));
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ]),
+              )));
+    });
   }
 }
