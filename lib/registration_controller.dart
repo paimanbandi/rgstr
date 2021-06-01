@@ -7,6 +7,7 @@ import 'package:rgstr/registration_view.dart';
 
 import 'package:imei_imsi_plugin/imei_imsi_plugin.dart';
 import 'package:device_info/device_info.dart';
+import 'package:camera/camera.dart';
 
 class RegistrationController extends State<RegistrationPage> {
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -21,29 +22,9 @@ class RegistrationController extends State<RegistrationPage> {
   DateTime selectedDate = DateTime.now();
   int age = 0;
 
-  int getAge(DateTime from, DateTime to) {
-    from = DateTime(from.year, from.month, from.day);
-    to = DateTime(to.year, to.month, to.day);
-    int dayDiff = (to.difference(from).inHours / 24).round();
-    int age = (dayDiff / 365).round();
-    return age;
-  }
-
-  Future<Null> selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(context: context, initialDate: selectedDate, firstDate: DateTime(1901, 1), lastDate: DateTime(2100));
-    if (picked != null && picked != selectedDate) {
-      String formattedDateTime = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year.toString()}";
-      final DateTime birthday = DateTime(picked.year, picked.month, picked.day);
-      final DateTime now = DateTime.now();
-      setState(() {
-        selectedDate = picked;
-        tecDob.value = TextEditingValue(text: formattedDateTime);
-        age = getAge(birthday, now);
-      });
-    }
-  }
-
   String sPlatformImei = '';
+
+  File fPicture;
 
   @override
   void initState() {
@@ -74,6 +55,28 @@ class RegistrationController extends State<RegistrationPage> {
     setState(() {
       sPlatformImei = platformImei;
     });
+  }
+
+  int getAge(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    int dayDiff = (to.difference(from).inHours / 24).round();
+    int age = (dayDiff / 365).round();
+    return age;
+  }
+
+  Future<Null> selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(context: context, initialDate: selectedDate, firstDate: DateTime(1901, 1), lastDate: DateTime(2100));
+    if (picked != null && picked != selectedDate) {
+      String formattedDateTime = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year.toString()}";
+      final DateTime birthday = DateTime(picked.year, picked.month, picked.day);
+      final DateTime now = DateTime.now();
+      setState(() {
+        selectedDate = picked;
+        tecDob.value = TextEditingValue(text: formattedDateTime);
+        age = getAge(birthday, now);
+      });
+    }
   }
 
   @override

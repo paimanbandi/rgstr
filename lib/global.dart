@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+
 abstract class WidgetView<T1, T2> extends StatelessWidget {
   final T2 state;
 

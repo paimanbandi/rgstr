@@ -1,4 +1,4 @@
-package com.example.rgstr
+package id.paiman.rgstr
 
 import io.flutter.embedding.android.FlutterActivity
 

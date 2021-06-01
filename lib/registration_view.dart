@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rgstr/global.dart';
 import 'package:rgstr/registration_controller.dart';
 import 'package:rgstr/registration_page.dart';
 import 'package:rgstr/validations.dart';
-
-import 'global.dart';
+import 'package:rgstr/utils.dart';
 
 class RegistrationView extends WidgetView<RegistrationPage, RegistrationController> {
   RegistrationController state;
@@ -289,6 +291,32 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                                 ),
                                 style: textStyle,
                               ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'Picture *',
+                                style: textStyle,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: TextButton(
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.add_photo_alternate_outlined),
+                                      SizedBox(width: 10),
+                                      Text('Take a Picture'),
+                                    ],
+                                  ),
+                                  onPressed: () async {
+                                    final File result = await openCamOrDirDialog();
+                                    if (result != null) state.setState(() => state.fPicture = result);
+                                  }),
                             )
                           ],
                         ),
