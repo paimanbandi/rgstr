@@ -320,6 +320,30 @@ class RegistrationView extends WidgetView<RegistrationPage, RegistrationControll
                             )
                           ],
                         ),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: ElevatedButton(
+                                    style: ButtonStyle(
+                                      padding: MaterialStateProperty.all(EdgeInsets.all(15)),
+                                      elevation: MaterialStateProperty.all(0),
+                                      shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10))),
+                                      backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                                        if (states.contains(MaterialState.disabled)) return disabledColor;
+                                        return primaryColor;
+                                      }),
+                                      foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                                        if (states.contains(MaterialState.disabled)) return textColor;
+                                        return whiteColor;
+                                      }),
+                                    ),
+                                    onPressed: () => null,
+                                    child: Text(
+                                      'Submit',
+                                    ))),
+                            // ),
+                          ],
+                        ),
                       ],
                     ),
                   )

@@ -12,3 +12,8 @@ abstract class WidgetView<T1, T2> extends StatelessWidget {
   @override
   Widget build(BuildContext context);
 }
+
+const Color primaryColor = Colors.blue;
+const Color whiteColor = Colors.white;
+const Color disabledColor = Colors.grey;
+const Color textColor = Colors.black54;
